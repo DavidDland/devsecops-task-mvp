@@ -1,0 +1,28 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+
+metadata:
+  name: task-mvp
+  namespace: argocd
+
+spec:
+  project: default
+
+  source:
+    repoURL: https://github.com/DavidDland/devsecops-task-mvp.git
+    targetRevision: main
+    path: task-mvp-chart
+
+    helm:
+      valueFiles:
+        - values.yaml
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
+
+  syncPolicy:
+    automated:
+      enabled: true
+      prune: true
+      selfHeal: true
