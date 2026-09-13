@@ -1,8 +1,8 @@
 replicaCount: 6
 
 image:
-  repository: task-mvp
-  tag: "1.0"
+  repository: ghcr.io/daviddland/devsecops-task-mvp
+  tag: "6639b48511e95399a5f6eddfed007d8217ef9951"
   pullPolicy: IfNotPresent
 
 service:
