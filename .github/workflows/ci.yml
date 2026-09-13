@@ -9,7 +9,7 @@ on:
       - main
 
 permissions:
-  contents: read
+  contents: write
   packages: write
 
 env:
@@ -76,3 +76,39 @@ jobs:
         run: |
           docker push \
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+                  - name: Update Helm image tag
+        if: github.event_name == 'push'
+        run: |
+          python <<'PY'
+          from pathlib import Path
+          import os
+          import re
+
+          path = Path("task-mvp-chart/values.yaml")
+          text = path.read_text()
+
+          updated, count = re.subn(
+              r'(?m)^(\s*tag:\s*)".*"$',
+              rf'\1"{os.environ["GITHUB_SHA"]}"',
+              text,
+              count=1,
+          )
+
+          if count != 1:
+              raise RuntimeError("Could not find Helm image tag in values.yaml")
+
+          path.write_text(updated)
+          PY
+
+      - name: Commit Helm image tag
+        if: github.event_name == 'push'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add task-mvp-chart/values.yaml
+
+          git diff --cached --quiet || \
+            git commit -m "Deploy image ${{ github.sha }}"
+
+          git push
