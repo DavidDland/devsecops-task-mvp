@@ -12,7 +12,7 @@ permissions:
   contents: read
 
 jobs:
-  test-and-build:
+  test-security-build:
     runs-on: ubuntu-latest
 
     steps:
@@ -34,5 +34,22 @@ jobs:
       - name: Run tests
         run: python -m pytest
 
+      - name: Audit Python dependencies
+        uses: pypa/gh-action-pip-audit@v1.1.0
+        with:
+          inputs: requirements.txt
+
       - name: Build Docker image
         run: docker build -t task-mvp:${{ github.sha }} .
+
+      - name: Install Trivy
+        uses: aquasecurity/setup-trivy@e07451d2e059ed86c2870430ea286b3a9e0bf241
+        with:
+          version: v0.74.0
+
+      - name: Scan Docker image
+        run: |
+          trivy image \
+            --exit-code 1 \
+            --severity HIGH,CRITICAL \
+            task-mvp:${{ github.sha }}
