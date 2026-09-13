@@ -2,7 +2,7 @@ replicaCount: 6
 
 image:
   repository: ghcr.io/daviddland/devsecops-task-mvp
-  tag: "6639b48511e95399a5f6eddfed007d8217ef9951"
+  tag: "696298797b9f1526d8b505c7fc443cd0a4a72238"
   pullPolicy: IfNotPresent
 
 service:
