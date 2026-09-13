@@ -76,7 +76,8 @@ jobs:
         run: |
           docker push \
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
-                  - name: Update Helm image tag
+
+      - name: Update Helm image tag
         if: github.event_name == 'push'
         run: |
           python <<'PY'
